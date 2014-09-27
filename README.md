@@ -1,0 +1,4 @@
+SpendyNd
+========
+
+Managing personal expenses
