@@ -6,6 +6,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
     <string name="warning">Attenzione!</string>
-    <string name="login">Sign in or Sign up</string>
+    <string name="login">Login</string>
+    <string name="registration">Registrazione</string>
+    <string name="confirm_password">conferma password</string>
 
 </resources>
