@@ -1,6 +1,7 @@
 package com.adaldosso.spendy;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -47,7 +48,6 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -59,8 +59,11 @@ public class MainActivity extends Activity {
     }
 
     public void switchRegistration(View view) {
-        getFragmentManager().beginTransaction()
-                .replace(R.id.activity_main, new RegistrationFragment()).commit();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.replace(R.id.activity_main, new RegistrationFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     public void login(View view) throws IOException, JSONException {
@@ -122,11 +125,6 @@ public class MainActivity extends Activity {
             out.close();
             String responseString = out.toString();
             JSONObject json = new JSONObject(responseString);
-            if (json.getBoolean("success")) {
-                //Utils.showMessage(this, "Connesso");
-            } else {
-                //Utils.showMessage(this, "Non Connesso");
-            }
             Utils.showMessage(this, "Grazie per la registrazione, il servizio sarà attivo al più presto");
         } else {
             response.getEntity().getContent().close();
