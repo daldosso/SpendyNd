@@ -15,9 +15,11 @@ import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,6 +34,8 @@ public class MainActivity extends Activity {
 
     public static final String LOGIN_URL = "http://www.adaldosso.com/quantospendi/srv/login.php";
     private static final String REGISTRATION_URL = "http://www.adaldosso.com/quantospendi/srv/registration-nd.php";
+    private static final String OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/spese.php";
+    private HttpClient httpClient = new DefaultHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +73,6 @@ public class MainActivity extends Activity {
     public void login(View view) throws IOException, JSONException {
         EditText editEmail = (EditText) findViewById(R.id.editEmail);
         EditText editPassword = (EditText) findViewById(R.id.editPassword);
-        HttpClient httpClient = new DefaultHttpClient();
         URL url = new URL(LOGIN_URL);
         HttpResponse response;
         HttpPost httpPost = new HttpPost(String.valueOf(url));
@@ -86,11 +89,40 @@ public class MainActivity extends Activity {
             String responseString = out.toString();
             JSONObject json = new JSONObject(responseString);
             if (json.getBoolean("success")) {
-                //Utils.showMessage(this, "Connesso");
+                viewOutgoings();
             } else {
-                //Utils.showMessage(this, "Non Connesso");
+                Utils.showMessage(this, "Email e/o password errate");
             }
-            Utils.showMessage(this, "Email e/o password errate");
+        } else {
+            response.getEntity().getContent().close();
+            throw new IOException(statusLine.getReasonPhrase());
+        }
+    }
+
+    private void viewOutgoings() throws IOException, JSONException {
+        URL url = new URL(OUTGOINGS_URL);
+        HttpResponse response;
+        HttpGet httpGet = new HttpGet(String.valueOf(url));
+        response = httpClient.execute(httpGet);
+        StatusLine statusLine = response.getStatusLine();
+        if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            JSONObject json = new JSONObject(responseString);
+            if (json.getBoolean("success")) {
+                JSONArray rows = json.getJSONArray("rows");
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                OutgoingFragment outgoingFragment = new OutgoingFragment();
+                outgoingFragment.setJsonArray(rows);
+                transaction.replace(R.id.activity_main, outgoingFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            } else {
+                Utils.showMessage(this, "Errore");
+            }
         } else {
             response.getEntity().getContent().close();
             throw new IOException(statusLine.getReasonPhrase());
@@ -109,7 +141,6 @@ public class MainActivity extends Activity {
             return;
         }
 
-        HttpClient httpClient = new DefaultHttpClient();
         URL url = new URL(REGISTRATION_URL);
         HttpResponse response;
         HttpPost httpPost = new HttpPost(String.valueOf(url));
