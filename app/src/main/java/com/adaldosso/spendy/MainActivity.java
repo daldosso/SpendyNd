@@ -64,7 +64,10 @@ public class MainActivity extends Activity {
 
     public void switchRegistration(View view) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        //transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
+        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out );
+
+
         transaction.replace(R.id.activity_main, new RegistrationFragment());
         transaction.addToBackStack(null);
         transaction.commit();
