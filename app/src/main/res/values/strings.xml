@@ -9,5 +9,9 @@
     <string name="login">Login</string>
     <string name="registration">Registrazione</string>
     <string name="confirm_password">conferma password</string>
+    <string name="title_activity_outgoings">OutgoingsActivity</string>
+    <string name="month">month</string>
+    <string name="year">year</string>
+    <string name="amount">amount</string>
 
 </resources>
