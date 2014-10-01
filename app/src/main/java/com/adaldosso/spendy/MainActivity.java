@@ -17,6 +17,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
     public static final String LOGIN_URL = "http://www.adaldosso.com/quantospendi/srv/login.php";
     private static final String REGISTRATION_URL = "http://www.adaldosso.com/quantospendi/srv/registration-nd.php";
     private static final String OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/spese.php";
+    private static final String MONTHLY_OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/totali-categorie.php";
     private HttpClient httpClient = new DefaultHttpClient();
 
     @Override
@@ -48,7 +50,6 @@ public class MainActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .add(R.id.activity_main, new LoginFragment()).commit();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,33 +102,47 @@ public class MainActivity extends Activity {
     }
 
     private void viewOutgoings() throws IOException, JSONException {
-        URL url = new URL(OUTGOINGS_URL);
-        HttpResponse response;
-        HttpGet httpGet = new HttpGet(String.valueOf(url));
-        response = httpClient.execute(httpGet);
-        StatusLine statusLine = response.getStatusLine();
-        if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            response.getEntity().writeTo(out);
-            out.close();
-            String responseString = out.toString();
-            JSONObject json = new JSONObject(responseString);
-            if (json.getBoolean("success")) {
-                JSONArray rows = json.getJSONArray("rows");
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-                OutgoingFragment outgoingFragment = new OutgoingFragment();
-                outgoingFragment.setJsonArray(rows);
-                transaction.replace(R.id.activity_main, outgoingFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            } else {
-                Utils.showMessage(this, "Errore");
-            }
-        } else {
-            response.getEntity().getContent().close();
-            throw new IOException(statusLine.getReasonPhrase());
+        JSONArray rows = getRows(OUTGOINGS_URL, null);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        OutgoingFragment outgoingFragment = new OutgoingFragment();
+        outgoingFragment.setJsonArray(rows);
+        transaction.replace(R.id.activity_main, outgoingFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private JSONArray getRows(String url, List<NameValuePair> params) {
+        if (params != null) {
+            String paramString = "?" + URLEncodedUtils.format(params, "utf-8");
+            url += paramString;
         }
+        JSONArray rows = null;
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            StatusLine statusLine = response.getStatusLine();
+            if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
+                out.close();
+                String responseString = out.toString();
+                JSONObject json = new JSONObject(responseString);
+                if (json.getBoolean("success")) {
+                    rows = json.getJSONArray("rows");
+                } else {
+                    Utils.showMessage(this, "Errore");
+                }
+            } else {
+                response.getEntity().getContent().close();
+                throw new IOException(statusLine.getReasonPhrase());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return rows;
     }
 
     public void registration(View view) throws IOException, JSONException {
@@ -164,4 +179,17 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void loadMonthlyOutgoings(int year, int month) {
+        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+        params.add(new BasicNameValuePair("mese", String.valueOf(month)));
+        params.add(new BasicNameValuePair("anno", String.valueOf(year)));
+        JSONArray rows = getRows(MONTHLY_OUTGOINGS_URL, params);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
+        MonthlyOutgoingFragment monthlyOutgoingFragment = new MonthlyOutgoingFragment();
+        monthlyOutgoingFragment.setJsonArray(rows);
+        transaction.replace(R.id.activity_main, monthlyOutgoingFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }
