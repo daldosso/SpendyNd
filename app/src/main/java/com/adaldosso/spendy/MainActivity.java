@@ -2,6 +2,9 @@ package com.adaldosso.spendy;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -72,7 +75,20 @@ public class MainActivity extends Activity {
         transaction.commit();
     }
 
+    private boolean isNetworkAvailable(ConnectivityManager connectivityManager) {
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     public void login(View view) throws IOException, JSONException {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (!isNetworkAvailable(connectivityManager)) {
+            Utils.showMessage(this, getString(R.string.error_network));
+            return;
+        }
+
         EditText editEmail = (EditText) findViewById(R.id.editEmail);
         EditText editPassword = (EditText) findViewById(R.id.editPassword);
         URL url = new URL(LOGIN_URL);
@@ -93,7 +109,7 @@ public class MainActivity extends Activity {
             if (json.getBoolean("success")) {
                 viewOutgoings();
             } else {
-                Utils.showMessage(this, "Email e/o password errate");
+                Utils.showMessage(this, getString(R.string.wrong_credentials));
             }
         } else {
             response.getEntity().getContent().close();
