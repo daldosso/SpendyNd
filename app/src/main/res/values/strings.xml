@@ -13,5 +13,7 @@
     <string name="month">month</string>
     <string name="year">year</string>
     <string name="amount">amount</string>
+    <string name="wrong_credentials">Email e/o password errate</string>
+    <string name="error_network">Connessione ad internet assente</string>
 
 </resources>

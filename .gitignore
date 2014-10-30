@@ -3,3 +3,12 @@ build
 /.idea
 /.gradle
 /build
+/app/*.apk
+/.idea/workspace.xml
+/.idea/.name
+/.idea/compiler.xml
+/.idea/encodings.xml
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
