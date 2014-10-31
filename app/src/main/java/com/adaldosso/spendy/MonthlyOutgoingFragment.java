@@ -67,6 +67,17 @@ public class MonthlyOutgoingFragment extends Fragment implements AbsListView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        JSONObject item = (JSONObject) listView.getItemAtPosition(position);
+        MainActivity activity = (MainActivity) getActivity();
+        try {
+            activity.loadDetailOutgoings(
+                    item.getInt(Utils.YEAR),
+                    item.getInt(Utils.MONTH),
+                    item.getInt(Utils.ID_CATEGORY)
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -12,8 +12,13 @@
     <string name="title_activity_outgoings">OutgoingsActivity</string>
     <string name="month">month</string>
     <string name="year">year</string>
-    <string name="amount">amount</string>
+    <string name="amount">Importo</string>
     <string name="wrong_credentials">Email e/o password errate</string>
     <string name="error_network">Connessione ad internet assente</string>
+    <string name="bad_password">Password e conferma password devono coincidere</string>
+    <string name="welcome_message">Grazie per la registrazione, il servizio sarà attivo al più presto</string>
+    <string name="date">Data</string>
+    <string name="category">Categoria</string>
+    <string name="note">Note</string>
 
 </resources>

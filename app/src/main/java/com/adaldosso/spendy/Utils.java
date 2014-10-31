@@ -9,6 +9,12 @@ import javax.security.auth.x500.X500Principal;
 
 public class Utils {
 
+    public static final String MONTH = "mese";
+    public static final String YEAR = "anno";
+    public static final String NUM_MONTH = "numMese";
+    public static final String ID_CATEGORY = "idCategoria";
+    public static final String CATEGORY = "categoria";
+
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
 
     public static void showMessage(Context context, String message) {
