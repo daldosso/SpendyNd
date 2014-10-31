@@ -40,6 +40,8 @@ public class MainActivity extends Activity {
     private static final String REGISTRATION_URL = "http://www.adaldosso.com/quantospendi/srv/registration-nd.php";
     private static final String OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/spese.php";
     private static final String MONTHLY_OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/totali-categorie.php";
+    private static final String DETAIL_OUTGOINGS_URL = "http://www.adaldosso.com/quantospendi/srv/spese-dettagli.php";
+
     private HttpClient httpClient = new DefaultHttpClient();
 
     @Override
@@ -81,14 +83,9 @@ public class MainActivity extends Activity {
     }
 
     public void login(View view) throws IOException, JSONException {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (!isNetworkAvailable(connectivityManager)) {
-            Utils.showMessage(this, getString(R.string.error_network));
+        if (!checkConnectivity()) {
             return;
         }
-
         EditText editEmail = (EditText) findViewById(R.id.editEmail);
         EditText editPassword = (EditText) findViewById(R.id.editPassword);
         URL url = new URL(LOGIN_URL);
@@ -115,6 +112,17 @@ public class MainActivity extends Activity {
             response.getEntity().getContent().close();
             throw new IOException(statusLine.getReasonPhrase());
         }
+    }
+
+    private boolean checkConnectivity() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (!isNetworkAvailable(connectivityManager)) {
+            Utils.showMessage(this, getString(R.string.error_network));
+            return false;
+        }
+        return true;
     }
 
     private void viewOutgoings() throws IOException, JSONException {
@@ -169,7 +177,7 @@ public class MainActivity extends Activity {
         EditText editPasswordConfirm = (EditText) findViewById(R.id.editPasswordConfirm);
         String confirmPassword = editPasswordConfirm.getText().toString();
         if (!password.equals(confirmPassword)) {
-            Utils.showMessage(this, "Password e conferma password devono coincidere");
+            Utils.showMessage(this, getString(R.string.bad_password));
             return;
         }
 
@@ -188,7 +196,7 @@ public class MainActivity extends Activity {
             out.close();
             String responseString = out.toString();
             JSONObject json = new JSONObject(responseString);
-            Utils.showMessage(this, "Grazie per la registrazione, il servizio sarà attivo al più presto");
+            Utils.showMessage(this, getString(R.string.welcome_message));
         } else {
             response.getEntity().getContent().close();
             throw new IOException(statusLine.getReasonPhrase());
@@ -197,14 +205,29 @@ public class MainActivity extends Activity {
 
     public void loadMonthlyOutgoings(int year, int month) {
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-        params.add(new BasicNameValuePair("mese", String.valueOf(month)));
-        params.add(new BasicNameValuePair("anno", String.valueOf(year)));
+        params.add(new BasicNameValuePair(Utils.MONTH, String.valueOf(month)));
+        params.add(new BasicNameValuePair(Utils.YEAR, String.valueOf(year)));
         JSONArray rows = getRows(MONTHLY_OUTGOINGS_URL, params);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
         MonthlyOutgoingFragment monthlyOutgoingFragment = new MonthlyOutgoingFragment();
         monthlyOutgoingFragment.setJsonArray(rows);
         transaction.replace(R.id.activity_main, monthlyOutgoingFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    public void loadDetailOutgoings(int year, int month, int category) {
+        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+        params.add(new BasicNameValuePair(Utils.MONTH, String.valueOf(month)));
+        params.add(new BasicNameValuePair(Utils.YEAR, String.valueOf(year)));
+        params.add(new BasicNameValuePair(Utils.CATEGORY, String.valueOf(category)));
+        JSONArray rows = getRows(DETAIL_OUTGOINGS_URL, params);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
+        DetailOutgoingFragment detailOutgoingFragment = new DetailOutgoingFragment();
+        detailOutgoingFragment.setJsonArray(rows);
+        transaction.replace(R.id.activity_main, detailOutgoingFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }

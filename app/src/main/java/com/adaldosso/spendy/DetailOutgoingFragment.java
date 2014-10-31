@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class OutgoingFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class DetailOutgoingFragment extends Fragment implements AbsListView.OnItemClickListener {
 
     private AbsListView listView;
     private JSONAdapter jsonAdapter;
@@ -31,29 +31,36 @@ public class OutgoingFragment extends Fragment implements AbsListView.OnItemClic
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
-                    convertView = getActivity().getLayoutInflater().inflate(R.layout.outgoing, null);
+                    convertView = getActivity().getLayoutInflater().inflate(R.layout.detail_outgoing, null);
                 }
-                TextView textMonth =(TextView)convertView.findViewById(R.id.month);
-                TextView textYear =(TextView)convertView.findViewById(R.id.year);
-                TextView textAmount =(TextView)convertView.findViewById(R.id.amount);
+                TextView dateDetail =(TextView)convertView.findViewById(R.id.dateDetail);
+                TextView amountDetail =(TextView)convertView.findViewById(R.id.amountDetail);
+                TextView categoryDetail =(TextView)convertView.findViewById(R.id.categoryDetail);
+                TextView noteDetail =(TextView)convertView.findViewById(R.id.noteDetail);
+
                 JSONObject jsonData = getItem(position);
                 if (null != jsonData ){
-                    String month = "";
-                    String year = "";
+                    String date = "";
                     String amount = "";
+                    String category = "";
+                    String note = "";
                     try {
-                        month = jsonData.getString("mese");
-                        year = jsonData.getString("anno");
+                        date = jsonData.getString("dataSpesaFormatted");
                         amount = jsonData.getString("importo");
+                        category = jsonData.getString("categoria");
+                        note = jsonData.getString("note");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    textMonth.setText(month);
-                    textYear.setText(year);
-                    textAmount.setText(amount);
+                    dateDetail.setText("Data: " + date);
+                    amountDetail.setText("Importo: " + amount + " €");
+                    categoryDetail.setText("Categoria: " + category);
+                    noteDetail.setText("Note: " + note);
                 }
+
                 return convertView;
             }
+
         };
     }
 
@@ -69,13 +76,6 @@ public class OutgoingFragment extends Fragment implements AbsListView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        JSONObject item = (JSONObject) listView.getItemAtPosition(position);
-        MainActivity activity = (MainActivity) getActivity();
-        try {
-            activity.loadMonthlyOutgoings(item.getInt("anno"), item.getInt("numMese"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
 }
