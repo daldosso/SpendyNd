@@ -20,5 +20,7 @@
     <string name="date">Data</string>
     <string name="category">Categoria</string>
     <string name="note">Note</string>
+    <string name="action_add">Aggiungi spesa</string>
+    <string name="action_search">Cerca</string>
 
 </resources>
