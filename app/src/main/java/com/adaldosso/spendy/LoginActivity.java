@@ -3,8 +3,10 @@ package com.adaldosso.spendy;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +63,9 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
+    public static final String SUCCESS = "success";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -67,6 +85,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        /*
         // Find the Google+ sign in button.
         mPlusSignInButton = (SignInButton) findViewById(R.id.plus_sign_in_button);
         if (supportsGooglePlayServices()) {
@@ -84,7 +103,21 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
             return;
         }
 
-        // Set up the login form.
+        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        });
+
+        mSignOutButtons = findViewById(R.id.plus_sign_out_buttons);*/
+
+        getFragmentManager().beginTransaction()
+                .add(R.id.activity_login, new LoginFragment()).commit();
+    }
+
+    private void setupLoginForm() {
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -100,30 +133,70 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mEmailLoginFormView = findViewById(R.id.email_login_form);
-        mSignOutButtons = findViewById(R.id.plus_sign_out_buttons);
     }
 
     private void populateAutoComplete() {
         getLoaderManager().initLoader(0, null, this);
     }
 
+    public void login(View view) throws IOException, JSONException {
+        if (!Utils.checkConnectivity(this)) {
+            return;
+        }
+        setupLoginForm();
+        attemptLogin();
+    }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
+    private void startMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        LoginActivity.this.startActivity(intent);
+    }
+
+    public void registration(View view) throws IOException, JSONException {
+        EditText editEmail = (EditText) findViewById(R.id.editEmailReg);
+        String email = editEmail.getText().toString();
+        EditText editPassword = (EditText) findViewById(R.id.editPasswordReg);
+        String password = editPassword.getText().toString();
+        EditText editPasswordConfirm = (EditText) findViewById(R.id.editPasswordConfirm);
+        String confirmPassword = editPasswordConfirm.getText().toString();
+        if (!password.equals(confirmPassword)) {
+            Utils.showMessage(this, getString(R.string.bad_password));
+            return;
+        }
+
+        URL url = new URL(Utils.REGISTRATION_URL);
+        HttpResponse response;
+        HttpPost httpPost = new HttpPost(String.valueOf(url));
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        nameValuePairs.add(new BasicNameValuePair("username", email));
+        nameValuePairs.add(new BasicNameValuePair("password", password));
+        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        response = Utils.getHttpClient().execute(httpPost);
+        StatusLine statusLine = response.getStatusLine();
+        if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            JSONObject json = new JSONObject(responseString);
+            Utils.showMessage(this, getString(R.string.welcome_message));
+        } else {
+            response.getEntity().getContent().close();
+            throw new IOException(statusLine.getReasonPhrase());
+        }
+    }
+
+    public void switchRegistration(View view) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
+        transaction.replace(R.id.activity_login, new RegistrationFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     public void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -142,7 +215,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
 
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        /*if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -157,7 +230,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
-        }
+        }*/
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
@@ -336,6 +409,8 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
 
         private final String mEmail;
         private final String mPassword;
+        private HttpResponse response;
+        private HttpPost httpPost;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -344,38 +419,57 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                URL url = new URL(Utils.LOGIN_URL);
+                httpPost = new HttpPost(String.valueOf(url));
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair(USERNAME, mEmail));
+                nameValuePairs.add(new BasicNameValuePair(PASSWORD, mPassword));
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                response = Utils.getHttpClient().execute(httpPost);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+            try {
+                mAuthTask = null;
+                if (success) {
+                    StatusLine statusLine = response.getStatusLine();
+                    if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        response.getEntity().writeTo(out);
+                        out.close();
+                        String responseString = out.toString();
+                        JSONObject json = new JSONObject(responseString);
+                        if (json.getBoolean(SUCCESS)) {
+                            startMainActivity();
+                        } else {
+                            wrongCredentials();
+                        }
+                    } else {
+                        response.getEntity().getContent().close();
+                        throw new IOException(statusLine.getReasonPhrase());
+                    }
+                    showProgress(false);
+                } else {
+                    wrongCredentials();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+
+        private void wrongCredentials() {
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.requestFocus();
         }
 
         @Override
