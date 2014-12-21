@@ -7,8 +7,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="warning">Attenzione!</string>
     <string name="login">Login</string>
-    <string name="registration">Registrazione</string>
-    <string name="confirm_password">conferma password</string>
+    <string name="registration">Registration</string>
+    <string name="confirm_password">confirm password</string>
     <string name="title_activity_outgoings">OutgoingsActivity</string>
     <string name="month">month</string>
     <string name="year">year</string>
