@@ -6,23 +6,11 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Spendy"
-        android:id="@+id/mainTitle"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textStyle="bold"
-        android:layout_margin="10dp" />
-
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mainLogo"
-        android:layout_below="@+id/mainTitle"
         android:src="@drawable/logo"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp" />
@@ -36,7 +24,9 @@
         android:layout_below="@+id/mainLogo"
         android:layout_centerHorizontal="true"
         android:hint="email"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -47,7 +37,9 @@
         android:layout_below="@+id/editEmailReg"
         android:layout_centerHorizontal="true"
         android:hint="password"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -58,18 +50,22 @@
         android:layout_below="@+id/editPasswordReg"
         android:layout_centerHorizontal="true"
         android:hint="@string/confirm_password"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/registration"
+        android:text="@string/action_sign_up"
+        android:textStyle="bold"
         android:onClick="registration"
         android:layout_below="@id/editPasswordConfirm"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        />
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
 
 </RelativeLayout>

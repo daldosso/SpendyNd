@@ -7,6 +7,9 @@ import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -68,5 +71,12 @@ public class Utils {
         }
         return httpClient;
     }
+
+    public static boolean supportsGooglePlayServices(Context context) {
+        return GooglePlayServicesUtil.isGooglePlayServicesAvailable(context) ==
+                ConnectionResult.SUCCESS;
+    }
+
+
 
 }
