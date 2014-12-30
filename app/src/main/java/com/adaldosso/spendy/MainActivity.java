@@ -51,8 +51,19 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                viewOutgoingAdder();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void viewOutgoingAdder() {
+        AddOutgoingFragment addOutgoingFragment = new AddOutgoingFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_main, addOutgoingFragment);
+        transaction.commit();
     }
 
     private void viewOutgoings() throws IOException, JSONException {
