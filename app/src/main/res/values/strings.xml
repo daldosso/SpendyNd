@@ -22,5 +22,6 @@
     <string name="note">Note</string>
     <string name="action_add">Aggiungi spesa</string>
     <string name="action_search">Cerca</string>
+    <string name="addExpense">Add</string>
 
 </resources>

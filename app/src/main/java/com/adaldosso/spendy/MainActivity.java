@@ -61,9 +61,11 @@ public class MainActivity extends Activity {
 
     private void viewOutgoingAdder() {
         AddOutgoingFragment addOutgoingFragment = new AddOutgoingFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_main, addOutgoingFragment);
-        transaction.commit();
+        getFragmentManager()
+            .beginTransaction()
+            .replace(R.id.activity_main, addOutgoingFragment)
+            .addToBackStack(null)
+            .commit();
     }
 
     private void viewOutgoings() throws IOException, JSONException {
