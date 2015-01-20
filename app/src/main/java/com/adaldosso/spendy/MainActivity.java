@@ -1,11 +1,13 @@
 package com.adaldosso.spendy;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -25,6 +27,8 @@ import java.util.List;
 
 
 public class MainActivity extends Activity {
+
+    private AddOutgoingFragment addOutgoingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class MainActivity extends Activity {
     }
 
     private void viewOutgoingAdder() {
-        AddOutgoingFragment addOutgoingFragment = new AddOutgoingFragment();
+        addOutgoingFragment = new AddOutgoingFragment();
         getFragmentManager()
             .beginTransaction()
             .replace(R.id.activity_main, addOutgoingFragment)
@@ -139,5 +143,14 @@ public class MainActivity extends Activity {
         transaction.replace(R.id.activity_main, detailOutgoingFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    public void setSelectedDate(int year, int monthOfYear, int dayOfMonth) {
+        addOutgoingFragment.setSelectedDate(year, monthOfYear, dayOfMonth);
     }
 }
