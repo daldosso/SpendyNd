@@ -2,7 +2,9 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    >
 
     <EditText
         android:layout_width="wrap_content"
@@ -10,19 +12,22 @@
         android:inputType="date"
         android:ems="10"
         android:id="@+id/selectedDate"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/addExpenseButton"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:hint="Data"
+        android:layout_toLeftOf="@+id/button"
+        android:layout_toStartOf="@+id/button" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
         android:onClick="showDatePickerDialog"
+        android:id="@+id/button"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/selectedDate"
-        android:layout_toEndOf="@+id/selectedDate"
-        android:id="@+id/button" />
+        android:layout_alignRight="@+id/addExpenseButton"
+        android:layout_alignEnd="@+id/addExpenseButton" />
 
     <Button
         android:id="@+id/addExpenseButton"
@@ -34,5 +39,18 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="51dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_below="@+id/selectedDate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:hint="Importo" />
 
 </RelativeLayout>
