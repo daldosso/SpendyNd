@@ -16,7 +16,7 @@ public class AddOutgoingFragment extends Fragment {
     }
 
     public void setSelectedDate(int year, int monthOfYear, int dayOfMonth) {
-        EditText selectedDate = (EditText) getView().findViewById(R.id.selectedDate);
+        EditText selectedDate = (EditText) getView().findViewById(R.id.dateEdit);
         selectedDate.setText(String.format("%02d/%02d/%04d",  dayOfMonth, (monthOfYear + 1),  year));
     }
 }

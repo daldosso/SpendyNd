@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="50dp"
+    android:padding="30dp"
     >
 
     <TextView
@@ -16,7 +16,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/dateEdit"
         android:layout_alignBottom="@+id/dateEdit"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|end"
         android:layout_alignRight="@+id/amountLabel"
         android:layout_alignEnd="@+id/amountLabel" />
 
@@ -28,6 +28,7 @@
         android:id="@+id/dateEdit"
         android:layout_toEndOf="@+id/amountLabel"
         android:layout_toLeftOf="@+id/dateButton"
+        android:layout_toStartOf="@+id/dateButton"
         android:layout_toRightOf="@+id/amountLabel" />
 
     <Button
