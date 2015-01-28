@@ -23,5 +23,7 @@
     <string name="action_add">Aggiungi spesa</string>
     <string name="action_search">Cerca</string>
     <string name="addExpense">Add</string>
+    <string name="dateLabel">Data</string>
+    <string name="amountLabel">Importo</string>
 
 </resources>
