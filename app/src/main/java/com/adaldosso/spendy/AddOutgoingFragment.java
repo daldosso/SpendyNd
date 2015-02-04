@@ -6,12 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 
 public class AddOutgoingFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_outgoing, container, false);
+
+        ExpandableListView categoryList = (ExpandableListView) view.findViewById(R.id.categoryList);
+        categoryList.setAdapter(new CategoryListAdapted());
+
         return view;
     }
 

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="30dp"
+    android:padding="20dp"
     >
 
     <TextView
@@ -29,7 +29,10 @@
         android:layout_toEndOf="@+id/amountLabel"
         android:layout_toLeftOf="@+id/dateButton"
         android:layout_toStartOf="@+id/dateButton"
-        android:layout_toRightOf="@+id/amountLabel" />
+        android:layout_toRightOf="@+id/amountLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        />
 
     <Button
         android:layout_width="wrap_content"
@@ -52,9 +55,10 @@
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/amountEdit"
         android:layout_alignBottom="@+id/amountEdit"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp"
-        android:gravity="center_vertical|right" />
+        android:gravity="center_vertical|end"
+        android:layout_alignRight="@+id/categoryLabel"
+        android:layout_alignEnd="@+id/categoryLabel"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -65,8 +69,38 @@
         android:layout_below="@+id/dateEdit"
         android:layout_marginTop="20dp"
         android:layout_toRightOf="@id/amountLabel"
+        android:layout_toEndOf="@id/amountLabel"
         android:layout_alignRight="@+id/addExpenseButton"
-        android:layout_alignEnd="@+id/addExpenseButton" />
+        android:layout_alignEnd="@+id/addExpenseButton"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/categoryLabel"
+        android:id="@+id/categoryLabel"
+        android:layout_below="@id/amountLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/categoryList"
+        android:layout_alignBottom="@+id/categoryList"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center_vertical|end" />
+
+    <ExpandableListView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:id="@+id/categoryList"
+        android:layout_below="@+id/amountEdit"
+        android:layout_toRightOf="@id/categoryLabel"
+        android:layout_toEndOf="@id/categoryLabel"
+        android:layout_alignRight="@+id/addExpenseButton"
+        android:layout_alignEnd="@+id/addExpenseButton"
+    />
 
     <Button
         android:id="@+id/addExpenseButton"
@@ -75,8 +109,9 @@
         android:text="@string/addExpense"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
-        android:layout_below="@+id/amountEdit"
+        android:layout_below="@+id/categoryList"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>
