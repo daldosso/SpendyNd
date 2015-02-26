@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddOutgoingFragment extends Fragment {
 
@@ -14,9 +18,15 @@ public class AddOutgoingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_outgoing, container, false);
 
-        ExpandableListView categoryList = (ExpandableListView) view.findViewById(R.id.categoryList);
-        categoryList.setAdapter(new CategoryListAdapted());
-
+        // http://www.mkyong.com/android/android-spinner-drop-down-list-example/
+        Spinner categoryList = (Spinner) view.findViewById(R.id.categoryList);
+        List<String> list = new ArrayList<String>();
+        list.add("list 1");
+        list.add("list 2");
+        list.add("list 3");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categoryList.setAdapter(dataAdapter);
         return view;
     }
 

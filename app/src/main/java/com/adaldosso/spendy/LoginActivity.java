@@ -389,7 +389,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
         protected void onPostExecute(final Boolean success) {
             try {
                 mAuthTask = null;
-                if (success) {
+                if (success && response != null) {
                     StatusLine statusLine = response.getStatusLine();
                     if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -420,6 +420,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
         }
 
         private void wrongCredentials() {
+            showProgress(false);
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }
