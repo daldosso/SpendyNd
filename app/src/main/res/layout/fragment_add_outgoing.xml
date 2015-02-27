@@ -95,22 +95,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/categoryList"
+        android:ems="10"
         android:layout_below="@+id/amountEdit"
-        android:layout_toRightOf="@id/categoryLabel"
         android:layout_toEndOf="@id/categoryLabel"
+        android:layout_toRightOf="@id/categoryLabel"
         android:layout_alignRight="@+id/addExpenseButton"
         android:layout_alignEnd="@+id/addExpenseButton"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="20dp"
+        android:layout_alignLeft="@+id/amountEdit"
+        android:layout_alignStart="@+id/amountEdit" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/noteLabel"
+        android:id="@+id/noteLabel"
+        android:gravity="center_vertical|end"
+        android:layout_alignRight="@+id/categoryLabel"
+        android:layout_alignEnd="@+id/categoryLabel"
+        android:layout_alignBottom="@+id/noteText"
+        android:layout_below="@+id/categoryLabel" />
 
     <EditText
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/noteText"
         android:layout_below="@+id/categoryList"
         android:layout_alignRight="@+id/addExpenseButton"
-        android:layout_alignEnd="@+id/addExpenseButton" />
+        android:layout_alignEnd="@+id/addExpenseButton"
+        android:layout_alignLeft="@+id/categoryList"
+        android:layout_alignStart="@+id/categoryList" />
 
     <Button
         android:id="@+id/addExpenseButton"
@@ -119,7 +136,7 @@
         android:text="@string/addExpense"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
-        android:layout_below="@+id/categoryList"
+        android:layout_below="@+id/noteText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

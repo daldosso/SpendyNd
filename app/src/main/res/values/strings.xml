@@ -26,5 +26,6 @@
     <string name="dateLabel">Data</string>
     <string name="amountLabel">Importo</string>
     <string name="categoryLabel">Categoria</string>
+    <string name="noteLabel">Note</string>
 
 </resources>
