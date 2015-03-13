@@ -30,7 +30,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
@@ -45,7 +44,6 @@ import java.util.List;
 
 public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<Cursor> {
 
-    public static final String SUCCESS = "success";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     private UserLoginTask mAuthTask = null;
@@ -397,7 +395,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
                         out.close();
                         String responseString = out.toString();
                         JSONObject json = new JSONObject(responseString);
-                        if (json.getBoolean(SUCCESS)) {
+                        if (json.getBoolean(Utils.SUCCESS)) {
                             startMainActivity();
                         } else {
                             wrongCredentials();
@@ -410,11 +408,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
                 } else {
                     wrongCredentials();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
         }

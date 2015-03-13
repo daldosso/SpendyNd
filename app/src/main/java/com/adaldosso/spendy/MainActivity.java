@@ -8,12 +8,16 @@ import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -40,9 +44,7 @@ public class MainActivity extends Activity {
         }
         try {
             viewOutgoings();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }
@@ -108,9 +110,7 @@ public class MainActivity extends Activity {
                 response.getEntity().getContent().close();
                 throw new IOException(statusLine.getReasonPhrase());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return rows;
@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
     }
 
     public void loadDetailOutgoings(int year, int month, int category) {
-        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+        List<NameValuePair> params = new ArrayList<>(2);
         params.add(new BasicNameValuePair(Utils.MONTH, String.valueOf(month)));
         params.add(new BasicNameValuePair(Utils.YEAR, String.valueOf(year)));
         params.add(new BasicNameValuePair(Utils.CATEGORY, String.valueOf(category)));
@@ -153,4 +153,37 @@ public class MainActivity extends Activity {
     public void setSelectedDate(int year, int monthOfYear, int dayOfMonth) {
         addOutgoingFragment.setSelectedDate(year, monthOfYear, dayOfMonth);
     }
+
+    public void addExpense(View v) {
+        EditText amount = (EditText) findViewById(R.id.amountEdit);
+        EditText note = (EditText) findViewById(R.id.noteText);
+        EditText dateEdit = (EditText) findViewById(R.id.dateEdit);
+        String date = dateEdit.getText().toString();
+        String dateFormatted = date.substring(6, 10) + "-" + date.substring(3, 5) + "-" + date.substring(0, 2);
+        Spinner categoryList = (Spinner) findViewById(R.id.categoryList);
+        Category category = (Category) categoryList.getSelectedItem();
+        HttpPost httpPost = new HttpPost(Utils.ADD_EXPENSE_URL);
+        List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+        nameValuePairs.add(new BasicNameValuePair("dataSpesa", dateFormatted));
+        nameValuePairs.add(new BasicNameValuePair("importo", amount.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("categoria", category.getId()));
+        nameValuePairs.add(new BasicNameValuePair("note", note.getText().toString()));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            HttpResponse response = Utils.getHttpClient().execute(httpPost);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            JSONObject json = new JSONObject(responseString);
+            if (json.getBoolean(Utils.SUCCESS)) {
+                Utils.showMessage(this, "Spesa inserita correttamente");
+            } else {
+                Utils.showMessage(this, "Errore");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

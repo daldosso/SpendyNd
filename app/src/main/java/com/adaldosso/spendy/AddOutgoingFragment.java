@@ -9,6 +9,14 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +28,41 @@ public class AddOutgoingFragment extends Fragment {
 
         // http://www.mkyong.com/android/android-spinner-drop-down-list-example/
         Spinner categoryList = (Spinner) view.findViewById(R.id.categoryList);
-        List<String> list = new ArrayList<String>();
-        list.add("list 1");
-        list.add("list 2");
-        list.add("list 3");
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        List<Category> list = new ArrayList<>();
+        JSONArray rows = getCategories(Utils.CATEGORIES_URL);
+        for (int i=0; i<rows.length(); i++) {
+            JSONObject row = rows.optJSONObject(i);
+            String description = "";
+            Integer idCategory = null;
+            try {
+                description = row.getString("descrizione");
+                idCategory = row.getInt("idCategoria");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            list.add(new Category(idCategory, description));
+        }
+        ArrayAdapter<Category> dataAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categoryList.setAdapter(dataAdapter);
         return view;
+    }
+
+    private JSONArray getCategories(String url) {
+        JSONArray rows = null;
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            HttpResponse response = Utils.getHttpClient().execute(httpGet);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            JSONObject json = new JSONObject(responseString);
+            rows = json.getJSONArray("rows");
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return rows;
     }
 
     public void setSelectedDate(int year, int monthOfYear, int dayOfMonth) {
